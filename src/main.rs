@@ -1,3 +1,12 @@
+/*
+
+If the number is greater than 1800000000 (for latitude, also comparing to 900000000 would work) you need to subtract 2^32 (=4294967296) and you get the correct latitudeE7 or longitudeE7.
+
+latitudeE7 = 4233738877 - 4294967296 = -61228419 (= 6.12 South)
+longitudeE7 = 1066510714 (= 106.7 East, no conversion here)
+
+*/
+
 use serde_json::{Result, Value};
 use std::fs;
 
