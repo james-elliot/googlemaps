@@ -7,6 +7,7 @@ longitudeE7 = 1066510714 (= 106.7 East, no conversion here)
 //use serde_json::{Result, Value};
 use serde_json::Value;
 use std::fs;
+use chrono::prelude::*;
 
 fn extract<'a>(v:&'a Value,i:usize) -> Option<(f64,f64,&'a str)> {
     let t: &Value = &v["locations"][i];
@@ -38,17 +39,33 @@ fn main() {
 <gpx version="1.0" creator="JM Alliot" xmlns="http://www.topografix.com/GPX/1/0">
 <trk>
     <name>Example GPX Document</name>
-    <trkseg>"#;
+ "#;
     let v = open_file("Records.json");
     println!("{}",prelude);
     let mut i = 0;
+    let nt = NaiveDate::from_ymd_opt(2019, 8, 31).unwrap().and_hms_opt(0, 0, 0).unwrap();
+    let first = DateTime::<Utc>::from_utc(nt,Utc);
+    let nt = NaiveDate::from_ymd_opt(2019, 9, 15).unwrap().and_hms_opt(23, 59, 59).unwrap();
+    let last = DateTime::<Utc>::from_utc(nt,Utc);
+    let mut dp =  0;
     loop {
 	let (lat,lon,time)=match extract(&v,i) {
 	    Some((lat,lon,time)) => (lat,lon,time),
 	    None => {println!("</trkseg>\n</trk>\n</gpx>");return ();},
 	};
+	let dt = time.parse::<DateTime<Utc>>().unwrap();
+	let dtn = dt.date_naive();
+	//	let y = dtn.year();
+	//	let m = dtn.month();
+	let d = dtn.day();
+	//	println!("{:?} {:?} {} {} {}",first,dt,d,m,y);
 	i=i+1;
-	if lat<0. {
+	if dt>first && dt<last && lon<0. {
+	    if d!= dp {
+		if dp!=0 {println!("</trkseg>\n");}
+		dp = d;
+		println!("<trkseg>\n");
+	    }
 	    println!("\t<trkpt lat=\"{}\" lon=\"{}\">",lat,lon);
 	    println!("\t\t<time>{}</time>\n\t</trkpt>",time);
 	}
