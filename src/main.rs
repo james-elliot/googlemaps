@@ -43,24 +43,32 @@ fn main() {
     let v = open_file("Records.json");
     println!("{}",prelude);
     let mut i = 0;
-    let nt = NaiveDate::from_ymd_opt(2019, 8, 31).unwrap().and_hms_opt(0, 0, 0).unwrap();
+    let nt = NaiveDate::from_ymd_opt(2023, 1, 1).unwrap().and_hms_opt(0, 0, 0).unwrap();
     let first = DateTime::<Utc>::from_utc(nt,Utc);
-    let nt = NaiveDate::from_ymd_opt(2019, 9, 15).unwrap().and_hms_opt(23, 59, 59).unwrap();
+    let nt = NaiveDate::from_ymd_opt(2023, 12, 12).unwrap().and_hms_opt(23, 59, 59).unwrap();
     let last = DateTime::<Utc>::from_utc(nt,Utc);
     let mut dp =  0;
     loop {
 	let (lat,lon,time)=match extract(&v,i) {
 	    Some((lat,lon,time)) => (lat,lon,time),
-	    None => {println!("</trkseg>\n</trk>\n</gpx>");return ();},
+	    None => {
+//		println!("i={} loc={}",i,&v["locations"][i]);
+		match &v["locations"][i] {
+		    serde_json::Value::Null => {
+			println!("</trkseg>\n</trk>\n</gpx>");
+			return();
+		    }
+		    _ => {i=i+1;continue;}
+		}
+	    }
 	};
+	i=i+1;
 	let dt = time.parse::<DateTime<Utc>>().unwrap();
 	let dtn = dt.date_naive();
-	//	let y = dtn.year();
-	//	let m = dtn.month();
+//	let y = dtn.year();
+//	let m = dtn.month();
 	let d = dtn.day();
-	//	println!("{:?} {:?} {} {} {}",first,dt,d,m,y);
-	i=i+1;
-	if dt>first && dt<last && lon<0. {
+	if dt>first && dt<last  {
 	    if d!= dp {
 		if dp!=0 {println!("</trkseg>\n");}
 		dp = d;
