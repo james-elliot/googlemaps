@@ -1,7 +1,7 @@
 # googlemaps
 
 Usage:
-  target/release/googlemaps [OPTIONS]
+ ./googlemaps [OPTIONS]
 
 Convert google maps timeline to gpx
 
