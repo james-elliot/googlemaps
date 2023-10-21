@@ -69,11 +69,12 @@ fn main() {
 <gpx version="1.0" creator="JM Alliot" xmlns="http://www.topografix.com/GPX/1/0">
 <trk>
     <name>Example GPX Document</name>
+    <trkseg>
  "#;
     let v = open_file(&name);
     println!("{}",prelude);
     let mut i = 0;
-    let mut dp =  0;
+  //  let mut dp =  0;
     loop {
 	let (lat,lon,time)=match extract(&v,i) {
 	    Some((lat,lon,time)) => (lat,lon,time),
@@ -90,16 +91,16 @@ fn main() {
 	};
 	i=i+1;
 	let dt = time.parse::<DateTime<Utc>>().unwrap();
-	let dtn = dt.date_naive();
+//	let dtn = dt.date_naive();
 //	let y = dtn.year();
 //	let m = dtn.month();
-	let d = dtn.day();
+//	let d = dtn.day();
 	if dt>first && dt<last  {
-	    if d!= dp {
-		if dp!=0 {println!("</trkseg>\n");}
-		dp = d;
-		println!("<trkseg>\n");
-	    }
+//	    if d!= dp {
+//		if dp!=0 {println!("</trkseg>\n");}
+//		dp = d;
+//		println!("<trkseg>\n");
+//	    }
 	    println!("\t<trkpt lat=\"{}\" lon=\"{}\">",lat,lon);
 	    println!("\t\t<time>{}</time>\n\t</trkpt>",time);
 	}
